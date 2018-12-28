@@ -22,8 +22,8 @@ class CreateExtensionCommand extends Command {
 				'path',
 				'p',
 				InputOption::VALUE_REQUIRED,
-				'The path for the new files. (Default: ./extensions/ and if not exist, current folder)',
-				dirname( __DIR__ ) . '/extensions/'
+				'The path for the new files. (Default: ./extensions and if not exist, current folder)',
+				dirname( __DIR__ ) . '/extensions'
 			);
 	}
 
@@ -44,11 +44,6 @@ class CreateExtensionCommand extends Command {
 		$output->writeln( 'Building extension...' );
 
 		$path = $input->getOption( 'path' );
-		if ( !file_exists( $path ) ) {
-			// Path doesn't exist
-			$output->writeln( 'Could not output to requested path: ' . $path );
-			return 1;
-		}
 
 		$extPath = $path . '/' . $name;
 		if ( file_exists( $extPath ) ) {

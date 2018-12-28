@@ -10,14 +10,13 @@
       "role": "Developer"
     }
   ],
-	"require": {
-    "mooeypoo/mwstew-builder": "^0.9.3",
-    "symfony/console": "^4.2"
-  },
-	"require-dev": {
-	},
+  "bin": [ "bin/mwstew" ],
   "scripts": {
     "test-php": "./vendor/bin/phpunit --colors --verbose --configuration tests/phpunit.xml"
+  },
+  "require": {
+    "mooeypoo/mwstew-builder": "^0.9.3",
+    "symfony/console": "^4.2"
   },
   "autoload": {
       "psr-4": { "MWStew\\CLI\\": "src/" }
