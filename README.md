@@ -31,7 +31,7 @@ If you want to contribute, clone and initialize locally:
 
 1. Clone the repo
 2. Run `composer install`
-3. Run `composer test-php` to run tests
+3. Run `composer run test` to run tests
 
 See [MWStew](https://github.com/mooeypoo/MWStew) for the graphical interface.
 

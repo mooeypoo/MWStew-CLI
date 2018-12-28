@@ -5,25 +5,27 @@ use MWStew\CLI\CreateExtensionCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use org\bovigo\vfs\vfsStream;
 
 class CreateExtensionCommandTest extends KernelTestCase {
+	protected $root;
+	/**
+     * set up test environmemt
+     */
+    public function setUp()
+    {
+        $this->root = vfsStream::setup('testDir');
+    }
+
 	public function testExecute()
 	{
-		// $kernel = self::bootKernel();
-		// $application = new Application($kernel);
-
-		$testPath = './tests/temp';
 		$testName = 'testExtension';
 
-		// $command = $application->find('create-extension');
 		$command = new MWStew\CLI\CreateExtensionCommand();
 		$commandTester = new CommandTester($command);
 		$commandTester->execute(array(
-			// 'command'  => $command->getName(),
-
-			// pass arguments to the helper
 			'name' => $testName,
-			'--path' => $testPath
+			'--path' => vfsStream::url('testDir')
 		));
 
 		// the output of the command in the console
@@ -36,28 +38,14 @@ class CreateExtensionCommandTest extends KernelTestCase {
 
 		// Test that there's a folder
 		$this->assertTrue(
-			file_exists( $testPath . '/' . $testName ),
-			'Folder exists: ' . $testPath . '/' . $testName
+			$this->root->hasChild( $testName ),
+			'Folder exists: ' . $testName
 		);
 
 		$this->assertTrue(
-			file_exists( $testPath . '/' . $testName . '/extension.json' ),
-			'File exists: ' . $testPath . '/' . $testName . '/extension.json'
+			$this->root->hasChild( $testName . '/extension.json' ),
+			'File exists: ' . $testName . '/extension.json'
 		);
 
-		// Remove that folder
-		$this->delTree( $testPath . '/' . $testName );
-	}
-
-	public static function delTree($dir) {
-		$files = array_diff(scandir($dir), array('.','..'));
-		foreach ($files as $file) {
-			if ( is_dir( "$dir/$file" ) ) {
-				self::delTree("$dir/$file");
-			} else {
-				unlink("$dir/$file");
-			}
-		}
-		return rmdir($dir);
 	}
 }
