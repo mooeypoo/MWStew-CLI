@@ -1,0 +1,14 @@
+<phpunit backupGlobals="true" colors="true" bootstrap="../vendor/autoload.php">
+	<php>
+		<!-- the value is the FQCN of the application kernel -->
+		<env name="KERNEL_CLASS" value="App\Kernel" />
+	</php>
+	<filter>
+		<whitelist>
+			<directory>/tests</directory>
+		</whitelist>
+	</filter>
+	<testsuite name="cli">
+		<directory>./</directory>
+	</testsuite>
+</phpunit>

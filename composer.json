@@ -18,6 +18,10 @@
     "mooeypoo/mwstew-builder": "^0.9.3",
     "symfony/console": "^4.2"
   },
+  "require-dev": {
+      "phpunit/phpunit": "^7.5",
+      "symfony/framework-bundle": "^4.2"
+  },
   "autoload": {
       "psr-4": { "MWStew\\CLI\\": "src/" }
   }

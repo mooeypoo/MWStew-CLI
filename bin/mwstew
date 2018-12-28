@@ -4,10 +4,11 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Create the application entrypoint
-$application = new Symfony\Component\Console\Application;
+$application = new Symfony\Component\Console\Application( 'mwstew', '0.9.0' );
 
 // Add commands
-$application->add( new MWStew\CLI\CreateExtensionCommand() );
-
+$command = new MWStew\CLI\CreateExtensionCommand();
+$application->add( $command );
+$application->setDefaultCommand($command->getName(), true);
 // Run the application
 $application->run();
