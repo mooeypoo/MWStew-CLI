@@ -1,14 +1,33 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+// We can't use a direct reference  __DIR__ . '/../vendor/autoload.php'
+// because when the script is copied to /vendor/bin it loses that relative
+// path.
+// Instead, unfortunately, it seems we need to look for our package specifically
+$basedir = dirname( __DIR__ );
+if ( file_exists( $basedir . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/../vendor/autoload.php';
+} else {
+	$basedir = dirname( dirname( $basedir ) );
+	if ( file_exists( $basedir . '/autoload.php' ) ) {
+		require_once $basedir . '/autoload.php';
+	} else {
+		echo "Could not find the proper vendor/autoload.php file.\n";
+		echo "Please report this problem at http://www.github.com/mooeypoo/MWStew-CLI/issues/\n";
+		echo "Include the following data:\n";
+		echo '$basedir => ' . $basedir . "\n";
+		echo 'Vendor path:' . $basedir . '/autoload.php';
+		return;
+	}
+}
 
 // Create the application entrypoint
-$application = new Symfony\Component\Console\Application( 'mwstew', '0.9.0' );
+$application = new Symfony\Component\Console\Application;
 
 // Add commands
 $command = new MWStew\CLI\CreateExtensionCommand();
 $application->add( $command );
-$application->setDefaultCommand($command->getName(), true);
+
 // Run the application
 $application->run();

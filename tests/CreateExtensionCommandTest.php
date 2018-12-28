@@ -10,12 +10,12 @@ use org\bovigo\vfs\vfsStream;
 class CreateExtensionCommandTest extends KernelTestCase {
 	protected $root;
 	/**
-     * set up test environmemt
-     */
-    public function setUp()
-    {
-        $this->root = vfsStream::setup('testDir');
-    }
+	 * set up test environmemt
+	 */
+	public function setUp()
+	{
+		$this->root = vfsStream::setup('testDir');
+	}
 
 	public function testExecute()
 	{
