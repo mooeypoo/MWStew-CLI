@@ -7,8 +7,22 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 class CreateExtensionCommand extends Command {
+	private $styles = [];
+
+	public function __construct( string $name = null ) {
+		parent::__construct( $name );
+
+		$this->styles = [
+			'mw' => new OutputFormatterStyle( 'yellow', 'black', [ 'bold' ] ),
+			'code' => new OutputFormatterStyle( 'green', 'black' ),
+			'stop' => new OutputFormatterStyle( 'red', 'black', [ 'bold' ] ),
+			'error' => new OutputFormatterStyle( 'red' ),
+			'working' => new OutputFormatterStyle( 'green', 'default', [ 'bold' ] ),
+		];
+	}
 	protected function configure() {
 		$this
 			->setName( 'create-extension' )
@@ -22,39 +36,79 @@ class CreateExtensionCommand extends Command {
 				'path',
 				'p',
 				InputOption::VALUE_REQUIRED,
-				'The path for the new files. (Default: ./extensions and if not exist, current folder)',
+				'The path for the new files.',
 				getcwd() . '/extensions'
+			)
+			->addOption(
+				'author',
+				'a',
+				InputOption::VALUE_REQUIRED,
+				'Extension author.',
+				''
+			)
+			->addOption(
+				'title',
+				't',
+				InputOption::VALUE_REQUIRED,
+				'Extension display title.',
+				''
+			)
+			->addOption(
+				'description',
+				'desc',
+				InputOption::VALUE_REQUIRED,
+				'A short description for the extension',
+				''
 			);
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		// Register all styles
+		foreach ( $this->styles as $styleName => $styleObject ) {
+			$output->getFormatter()->setStyle( $styleName, $styleObject );
+		}
+
+		$output->writeln( '' );
+		$output->writeln( $this->getMediaWikiAscii( 'mw' ) );
+		$output->writeln( $this->getMWStewAscii() );
+		$output->writeln( [
+			'<mw>          =*=*= MediaWiki extension maker =*=*=           </>',
+			''
+		] );
+
 		$name = $input->getArgument( 'name' );
+		$data = [
+			'name' => $name,
+			'author' => $input->getOption( 'author' ),
+			'title' => $input->getOption( 'title' ),
+			'description' => $input->getOption( 'description' ),
+		];
 
 		try {
-			$generator = new \MWStew\Builder\Generator( [ 'name' => $name ] );
+			$generator = new \MWStew\Builder\Generator( $data );
 		} catch ( \Exception $e ) {
-			$output->writeln( 'There were errors while trying to create the extension files:' );
+			$output->writeln( $this->outError( 'There were errors while trying to create the extension files:' ) );
 			$errors = json_decode( $e->getMessage() );
-
 			foreach ( $errors as $eField => $eErrors ) {
 				$output->writeln( '* ' . $eField . ': ' . $eErrors[0] );
 			}
 			return 1;
 		}
-		$output->writeln( 'Building extension...' );
-
 		$path = $input->getOption( 'path' );
-
 		$extPath = $path . '/' . $name;
+
+		$output->writeln( '<working>Starting...</>' );
+		$output->writeln( 'Building extension in "<code>' . $extPath . '</>"' );
+
 		if ( file_exists( $extPath ) ) {
 			// Path doesn't exist
-			$output->writeln( 'A folder already exists: ' . $extPath );
+			$output->writeln( $this->outError( 'The folder already exists: ' . $extPath ) );
 			return 1;
 		}
 
 		// Create the new folder
 		if ( !mkdir( $extPath, 0777, true ) ) {
-			$output->writeln( 'Failed to create the path: ' .$extPath );
+			$output->writeln( $this->outError( 'Failed to create the requested folder: ' . $extPath ) );
 			return 1;
 		}
 
@@ -99,14 +153,57 @@ class CreateExtensionCommand extends Command {
 			}
 		}
 		if ( count( $failed ) ) {
-			$output->writeln( 'Failed to create these files:' );
+			$output->writeln( '<error>Failed to create these files:</>' );
 			foreach ( $failed as $fail ) {
 				$output->writeln( ' * ' . $fail );
 			}
 		}
-		$output->writeln( 'Finished. Files available at ' . $extPath );
+		$output->writeln( '<info>Finished. Files available at ' . $extPath .'</info>' );
 
+		$output->writeln( '' );
 		return 0;
 	}
 
+	protected function outError( $str = '' ) {
+		return [
+			'<stop>Stopping.</> <error>' . $str . '</>',
+			''
+		];
+	}
+
+	protected function getMediaWikiAscii( $style = null ) {
+		$ascii = [
+			'       __  __          _ _    __          ___ _    _      ',
+			'      |  \/  |        | (_)   \ \        / (_) |  (_)     ',
+			'      | \  / | ___  __| |_  __ \ \  /\  / / _| | ___      ',
+			'      | |\/| |/ _ \/ _` | |/ _` \ \/  \/ / | | |/ / |     ',
+			'      | |  | |  __/ (_| | | (_| |\  /\  /  | |   <| |     ',
+			'      |_|  |_|\___|\__,_|_|\__,_| \/  \/   |_|_|\_\_|     ',
+		];
+
+		return $this->addStyleToArray( $ascii, $style );
+	}
+
+	protected function getMWStewAscii( $style = null ) {
+		$ascii = [
+			' ███╗   ███╗██╗    ██╗███████╗████████╗███████╗██╗    ██╗',
+			' ████╗ ████║██║    ██║██╔════╝╚══██╔══╝██╔════╝██║    ██║',
+			' ██╔████╔██║██║ █╗ ██║███████╗   ██║   █████╗  ██║ █╗ ██║',
+			' ██║╚██╔╝██║██║███╗██║╚════██║   ██║   ██╔══╝  ██║███╗██║',
+			' ██║ ╚═╝ ██║╚███╔███╔╝███████║   ██║   ███████╗╚███╔███╔╝',
+			' ╚═╝     ╚═╝ ╚══╝╚══╝ ╚══════╝   ╚═╝   ╚══════╝ ╚══╝╚══╝ ',
+		];
+		return $this->addStyleToArray( $ascii, $style );
+	}
+
+	protected function addStyleToArray( $ascii = [], $style = null ) {
+		if ( $style ) {
+			$new = [];
+			foreach ( $ascii as $a ) {
+				$new[] = '<' . $style . '>' . $a . '</>';
+			}
+			return $new;
+		}
+		return $ascii;
+	}
 }
