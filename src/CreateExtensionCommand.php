@@ -23,7 +23,7 @@ class CreateExtensionCommand extends Command {
 				'p',
 				InputOption::VALUE_REQUIRED,
 				'The path for the new files. (Default: ./extensions and if not exist, current folder)',
-				dirname( __DIR__ ) . '/extensions'
+				getcwd() . '/extensions'
 			);
 	}
 
