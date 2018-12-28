@@ -59,7 +59,66 @@ class CreateExtensionCommand extends Command {
 				InputOption::VALUE_REQUIRED,
 				'A short description for the extension',
 				''
+			)
+			->addOption(
+				'url',
+				'url',
+				InputOption::VALUE_REQUIRED,
+				'URL for the extension documentation',
+				''
+			)
+			->addOption(
+				'license',
+				'l',
+				InputOption::VALUE_REQUIRED,
+				'License for the extension. Available options: MIT, Apache-2.0, GPL-2.0+',
+				''
+			)
+			->addOption(
+				'js',
+				'js',
+				InputOption::VALUE_OPTIONAL,
+				'Add files for a JavaScript development environment',
+				false
+			)
+			->addOption(
+				'php',
+				'php',
+				InputOption::VALUE_OPTIONAL,
+				'Add files for a PHP development environment',
+				false
+			)
+			->addOption(
+				'specialname',
+				'sn',
+				InputOption::VALUE_REQUIRED,
+				'Name for a special page to be included in the extension. Must be a valid MediaWiki title',
+				''
+			)
+			->addOption(
+				'specialtitle',
+				'st',
+				InputOption::VALUE_REQUIRED,
+				'A readable title for the special page. Requires the --specialname option to be given as well.',
+				''
+			)
+			->addOption(
+				'specialintro',
+				'si',
+				InputOption::VALUE_REQUIRED,
+				'An introduction text that will appear at the top of the special page. Requires the --specialname option to be given as well.',
+				''
 			);
+	}
+
+	protected function getOutputHeader() {
+		return array_merge(
+			[ '' ],
+			$this->getMediaWikiAscii( 'mw' ),
+			$this->getMWStewAscii(),
+			[ '<mw>          =*=*= MediaWiki extension maker =*=*=           </>' ],
+			[ '' ]
+		);
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
@@ -68,13 +127,7 @@ class CreateExtensionCommand extends Command {
 			$output->getFormatter()->setStyle( $styleName, $styleObject );
 		}
 
-		$output->writeln( '' );
-		$output->writeln( $this->getMediaWikiAscii( 'mw' ) );
-		$output->writeln( $this->getMWStewAscii() );
-		$output->writeln( [
-			'<mw>          =*=*= MediaWiki extension maker =*=*=           </>',
-			''
-		] );
+		$output->writeln( $this->getOutputHeader() );
 
 		$name = $input->getArgument( 'name' );
 		$data = [
@@ -82,18 +135,29 @@ class CreateExtensionCommand extends Command {
 			'author' => $input->getOption( 'author' ),
 			'title' => $input->getOption( 'title' ),
 			'description' => $input->getOption( 'description' ),
+			'url' => $input->getOption( 'url' ),
+			'dev_js' => ( $input->getOption( 'js' ) !== false ),
+			'dev_php' => ( $input->getOption( 'php' ) !== false ),
+			'specialpage_name' => $input->getOption( 'specialname' ),
+			'specialpage_title' => $input->getOption( 'specialtitle' ),
+			'specialpage_intro' => $input->getOption( 'specialintro' ),
 		];
 
-		try {
-			$generator = new \MWStew\Builder\Generator( $data );
-		} catch ( \Exception $e ) {
-			$output->writeln( $this->outError( 'There were errors while trying to create the extension files:' ) );
-			$errors = json_decode( $e->getMessage() );
-			foreach ( $errors as $eField => $eErrors ) {
-				$output->writeln( '* ' . $eField . ': ' . $eErrors[0] );
+		// Validate license
+		$license = $input->getOption( 'license' );
+		$validLicenses = [ 'MIT', 'Apache-2.0', 'GPL-2.0+' ];
+		if ( $license ) {
+			if ( in_array( $license, $validLicenses ) ) {
+				$data['license'] = $license;
+			} else {
+				$output->writeln( $this->outError(
+					'Chosen license "' . $license . '" is invalid.' .
+					' Please choose a valid license: ' . join( ', ', $validLicenses )
+				) );
+				return 1;
 			}
-			return 1;
 		}
+
 		$path = $input->getOption( 'path' );
 		$extPath = $path . '/' . $name;
 
@@ -103,6 +167,18 @@ class CreateExtensionCommand extends Command {
 		if ( file_exists( $extPath ) ) {
 			// Path doesn't exist
 			$output->writeln( $this->outError( 'The folder already exists: ' . $extPath ) );
+			return 1;
+		}
+
+		// Build extension files
+		try {
+			$generator = new \MWStew\Builder\Generator( $data );
+		} catch ( \Exception $e ) {
+			$output->writeln( $this->outError( 'There were errors while trying to create the extension files:' ) );
+			$errors = json_decode( $e->getMessage() );
+			foreach ( $errors as $eField => $eErrors ) {
+				$output->writeln( '* ' . $eField . ': ' . $eErrors[0] );
+			}
 			return 1;
 		}
 

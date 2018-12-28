@@ -22,11 +22,11 @@ class CreateExtensionCommandTest extends KernelTestCase {
 		$testName = 'testExtension';
 
 		$command = new MWStew\CLI\CreateExtensionCommand();
-		$commandTester = new CommandTester($command);
-		$commandTester->execute(array(
+		$commandTester = new CommandTester( $command );
+		$commandTester->execute( array(
 			'name' => $testName,
 			'--path' => vfsStream::url('testDir')
-		));
+		) );
 
 		// the output of the command in the console
 		$output = $commandTester->getDisplay();
