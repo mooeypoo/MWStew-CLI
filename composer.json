@@ -1,0 +1,25 @@
+{
+  "name": "mooeypoo/mwstew-cli",
+  "description": "A command-line tool to create base mediawiki extension files",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Moriel Schottlender",
+      "email": "mooeypoo@gmail.com",
+      "homepage": "http://moriel.smarterthanthat.com",
+      "role": "Developer"
+    }
+  ],
+	"require": {
+    "mooeypoo/mwstew-builder": "^0.9.3",
+    "symfony/console": "^4.2"
+  },
+	"require-dev": {
+	},
+  "scripts": {
+    "test-php": "./vendor/bin/phpunit --colors --verbose --configuration tests/phpunit.xml"
+  },
+  "autoload": {
+      "psr-4": { "MWStew\\CLI\\": "src/" }
+  }
+}
