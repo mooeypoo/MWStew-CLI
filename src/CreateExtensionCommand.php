@@ -71,8 +71,7 @@ class CreateExtensionCommand extends Command {
 				'license',
 				'l',
 				InputOption::VALUE_REQUIRED,
-				'License for the extension. Available options: MIT, Apache-2.0, GPL-2.0+',
-				''
+				'License for the extension. Available options: MIT, Apache-2.0, GPL-2.0+'
 			)
 			->addOption(
 				'js',
@@ -136,12 +135,17 @@ class CreateExtensionCommand extends Command {
 			'title' => $input->getOption( 'title' ),
 			'description' => $input->getOption( 'description' ),
 			'url' => $input->getOption( 'url' ),
-			'dev_js' => ( $input->getOption( 'js' ) !== false ),
-			'dev_php' => ( $input->getOption( 'php' ) !== false ),
 			'specialpage_name' => $input->getOption( 'specialname' ),
 			'specialpage_title' => $input->getOption( 'specialtitle' ),
 			'specialpage_intro' => $input->getOption( 'specialintro' ),
 		];
+
+		if ( $input->getOption( 'js' ) !== false ) {
+			$data['dev_js'] = true;
+		}
+		if ( $input->getOption( 'php' ) !== false ) {
+			$data['dev_php'] = true;
+		}
 
 		// Validate license
 		$license = $input->getOption( 'license' );
