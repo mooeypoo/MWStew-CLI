@@ -1,4 +1,5 @@
 vendor/
 tests/temp/*
+build/
 !tests/temp/.gitkeep
 composer.lock
