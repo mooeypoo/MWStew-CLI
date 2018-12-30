@@ -15,7 +15,7 @@
     "test": "./vendor/bin/phpunit --colors --verbose --coverage-clover './build/logs/phpunit_clover.xml' --configuration tests/phpunit.xml"
   },
   "require": {
-    "mooeypoo/mwstew-builder": "^0.9",
+    "mooeypoo/mwstew-builder": "^1.0",
     "symfony/console": "^4.2"
   },
   "require-dev": {
