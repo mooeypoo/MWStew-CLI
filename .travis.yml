@@ -12,6 +12,7 @@ before_script:
 script:
   - composer validate
   - phpunit --coverage-clover ./build/logs/phpunit_clover.xml --configuration tests/phpunit.xml
+  - ./vendor/bin/minus-x check .
 
 # after_script:
 # - php vendor/bin/coveralls -v
