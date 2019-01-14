@@ -21,8 +21,10 @@ class CreateExtensionCommand extends Command {
 			'stop' => new OutputFormatterStyle( 'red', 'black', [ 'bold' ] ),
 			'error' => new OutputFormatterStyle( 'red' ),
 			'working' => new OutputFormatterStyle( 'green', 'default', [ 'bold' ] ),
+			'finished' => new OutputFormatterStyle( 'green', 'black', [ 'bold' ] ),
 		];
 	}
+
 	protected function configure() {
 		$this
 			->setName( 'create-extension' )
@@ -115,7 +117,7 @@ class CreateExtensionCommand extends Command {
 			[ '' ],
 			$this->getMediaWikiAscii( 'mw' ),
 			$this->getMWStewAscii(),
-			[ '<mw>          =*=*= MediaWiki extension maker =*=*=           </>' ],
+			[ '<mw>          =*=*= MediaWiki extension maker =*=*=                   </>' ],
 			[ '' ]
 		);
 	}
@@ -209,9 +211,7 @@ class CreateExtensionCommand extends Command {
 				if ( !in_array( $folderToCreate, $foldersCreated ) ) {
 					// Create the deep folder if it's not created yet
 					if ( !mkdir( $folderToCreate, 0777, true ) ) {
-						$failed[] = $folderToCreate;
-					} else {
-						$succeeded[] = $folderToCreate;
+						$failed[] = 'The folder ' . implode( '/', $structure ) . '/';
 					}
 					// Add it to the created folders array
 					$foldersCreated[] = $folderToCreate;
@@ -220,9 +220,9 @@ class CreateExtensionCommand extends Command {
 
 			// Create the files
 			if ( file_put_contents( $extPath . '/' . $fName, $fContent ) ) {
-				$succeeded[] = $extPath . '/' . $fName;
+				$succeeded[] = $fName;
 			} else {
-				$failed[] = $extPath . '/' . $fName;
+				$failed[] = $fName;
 			}
 		}
 
@@ -238,27 +238,33 @@ class CreateExtensionCommand extends Command {
 				$output->writeln( ' * ' . $fail );
 			}
 		}
-		$output->writeln( '<info>Finished. Files available at ' . $extPath .'</info>' );
+		$output->writeln( [
+			'',
+			'<finished>                       Finished successfully.                       </>',
+			'',
+			'<info>Your new extension files are available at </><code>' . $extPath .'</>',
+			'<info>To run your extension, make sure to add this to `LocalSettings.php`: <code>wfLoadExtension( \'' . $name . '\' );</>',
+			''
+		] );
 
-		$output->writeln( '' );
 		return 0;
 	}
 
 	protected function outError( $str = '' ) {
 		return [
-			'<stop>Stopping.</> <error>' . $str . '</>',
+			'<stop>ERROR.</> <error>' . $str . '</>',
 			''
 		];
 	}
 
 	protected function getMediaWikiAscii( $style = null ) {
 		$ascii = [
-			'       __  __          _ _    __          ___ _    _      ',
-			'      |  \/  |        | (_)   \ \        / (_) |  (_)     ',
-			'      | \  / | ___  __| |_  __ \ \  /\  / / _| | ___      ',
-			'      | |\/| |/ _ \/ _` | |/ _` \ \/  \/ / | | |/ / |     ',
-			'      | |  | |  __/ (_| | | (_| |\  /\  /  | |   <| |     ',
-			'      |_|  |_|\___|\__,_|_|\__,_| \/  \/   |_|_|\_\_|     ',
+			'          __  __          _ _    __          ___ _    _           ',
+			'         |  \/  |        | (_)   \ \        / (_) |  (_)          ',
+			'         | \  / | ___  __| |_  __ \ \  /\  / / _| | ___           ',
+			'         | |\/| |/ _ \/ _` | |/ _` \ \/  \/ / | | |/ / |          ',
+			'         | |  | |  __/ (_| | | (_| |\  /\  /  | |   <| |          ',
+			'         |_|  |_|\___|\__,_|_|\__,_| \/  \/   |_|_|\_\_|          ',
 		];
 
 		return $this->addStyleToArray( $ascii, $style );
@@ -266,12 +272,12 @@ class CreateExtensionCommand extends Command {
 
 	protected function getMWStewAscii( $style = null ) {
 		$ascii = [
-			' ███╗   ███╗██╗    ██╗███████╗████████╗███████╗██╗    ██╗',
-			' ████╗ ████║██║    ██║██╔════╝╚══██╔══╝██╔════╝██║    ██║',
-			' ██╔████╔██║██║ █╗ ██║███████╗   ██║   █████╗  ██║ █╗ ██║',
-			' ██║╚██╔╝██║██║███╗██║╚════██║   ██║   ██╔══╝  ██║███╗██║',
-			' ██║ ╚═╝ ██║╚███╔███╔╝███████║   ██║   ███████╗╚███╔███╔╝',
-			' ╚═╝     ╚═╝ ╚══╝╚══╝ ╚══════╝   ╚═╝   ╚══════╝ ╚══╝╚══╝ ',
+			'     ███╗   ███╗██╗    ██╗███████╗████████╗███████╗██╗    ██╗   ',
+			'     ████╗ ████║██║    ██║██╔════╝╚══██╔══╝██╔════╝██║    ██║   ',
+			'     ██╔████╔██║██║ █╗ ██║███████╗   ██║   █████╗  ██║ █╗ ██║   ',
+			'     ██║╚██╔╝██║██║███╗██║╚════██║   ██║   ██╔══╝  ██║███╗██║   ',
+			'     ██║ ╚═╝ ██║╚███╔███╔╝███████║   ██║   ███████╗╚███╔███╔╝   ',
+			'     ╚═╝     ╚═╝ ╚══╝╚══╝ ╚══════╝   ╚═╝   ╚══════╝ ╚══╝╚══╝    ',
 		];
 		return $this->addStyleToArray( $ascii, $style );
 	}
