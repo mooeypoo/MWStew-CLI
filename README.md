@@ -12,6 +12,8 @@ Get the package from packagist:
 composer install mooeypoo/mwstew-cli
 ```
 
+### Command: create-extension
+
 To create extension files, run the `create-extension` command:
 
 ```
@@ -21,6 +23,22 @@ To create extension files, run the `create-extension` command:
 By default, files will be created in the path `./extensions/`. You can provide a different path by using the `--path [new path]` command.
 
 To see the available parameters for create-extension command, use `./vendor/bin/mwstew create-extension -h`
+
+### Command: list-hooks
+
+To see a list of all available recognized hooks from the MediaWiki API, use the `list-hooks` command:
+
+```
+./vendor/bin/mwstew create-extension list-hooks
+```
+
+You can also search the list of hooks:
+
+```
+./vendor/bin/mwstew create-extension list-hooks --search="api"
+```
+To see the available parameters for create-extension command, use `./vendor/bin/mwstew list-hooks -h`
+
 
 ## Contribute
 

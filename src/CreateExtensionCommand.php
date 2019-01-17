@@ -119,7 +119,7 @@ class CreateExtensionCommand extends MWStewBaseCommand {
 			'specialpage_name' => $input->getOption( 'specialname' ),
 			'specialpage_title' => $input->getOption( 'specialtitle' ),
 			'specialpage_intro' => $input->getOption( 'specialintro' ),
-			'hooks' => $input->getOption( 'hooks' ),
+			'hooks' => $input->getOption( 'hook' ),
 		];
 
 		if ( $input->getOption( 'js' ) !== false ) {
