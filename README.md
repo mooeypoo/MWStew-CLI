@@ -15,7 +15,7 @@ composer install mooeypoo/mwstew-cli
 To create extension files, run the `create-extension` command:
 
 ```
-php ./vendor/bin/mwtsew create-extension extensionName
+./vendor/bin/mwstew create-extension extensionName
 ```
 
 By default, files will be created in the path `./extensions/`. You can provide a different path by using the `--path [new path]` command.
