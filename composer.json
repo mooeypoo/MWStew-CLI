@@ -15,7 +15,7 @@
     "test": "./vendor/bin/phpunit --colors --verbose --coverage-clover './build/logs/phpunit_clover.xml' --configuration tests/phpunit.xml"
   },
   "require": {
-    "mooeypoo/mwstew-builder": "^1.0",
+    "mooeypoo/mwstew-builder": "^1.1",
     "symfony/console": "^4.2"
   },
   "require-dev": {
@@ -25,6 +25,9 @@
     "mikey179/vfsStream": "^1.6"
   },
   "autoload": {
-      "psr-4": { "MWStew\\CLI\\": "src/" }
+      "psr-4": {
+          "MWStew\\CLI\\": "src/",
+          "MWStew\\CLI\\Helpers\\": "src/Helpers"
+      }
   }
 }

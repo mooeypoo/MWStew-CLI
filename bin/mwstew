@@ -26,8 +26,8 @@ if ( file_exists( $basedir . '/vendor/autoload.php' ) ) {
 $application = new Symfony\Component\Console\Application;
 
 // Add commands
-$command = new MWStew\CLI\CreateExtensionCommand();
-$application->add( $command );
+$application->add( new MWStew\CLI\CreateExtensionCommand() );
+$application->add( new MWStew\CLI\ListHooksCommand() );
 
 // Run the application
 $application->run();
