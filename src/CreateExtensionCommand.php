@@ -12,6 +12,15 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 class CreateExtensionCommand extends MWStewBaseCommand {
 
 	protected function configure() {
+		// The default path assumes we're at the top level of MediaWiki.
+		$defaultPath = getcwd() . '/extensions';
+		if ('extensions' === basename(getcwd())) {
+			// We're in the extensions directory.
+			$defaultPath = getcwd();
+		} elseif ('extensions' === basename(dirname(getcwd()))) {
+			// There's an extensions directory one level up from here (i.e. we're in another extension's directory).
+			$defaultPath = dirname(getcwd());
+		}
 		$this
 			->setName( 'create-extension' )
 			->setDescription( 'Create the basic files needed to develop a new MediaWiki extension' )
@@ -25,7 +34,7 @@ class CreateExtensionCommand extends MWStewBaseCommand {
 				'p',
 				InputOption::VALUE_REQUIRED,
 				'The path for the new files.',
-				getcwd() . '/extensions'
+				$defaultPath
 			)
 			->addOption(
 				'author',
